@@ -435,35 +435,44 @@
 
             <!-- Modal body -->
             <div class="modal-body">
-                <form action="/action_page.php">
+                <form action="/action_page.php" id="registrationForm">
                     <div class="form-group">
                         <label for="fullname">Full Name:</label>
-                        <input type="text" class="form-control" placeholder="Enter fullname" id="fullname">
+                        <input type="text" class="form-control" placeholder="Enter fullname" id="fullname" required pattern="[A-Za-z\s]+">
                     </div>
+
                     <div class="form-group">
                         <label for="phone">Phone:</label>
-                        <input type="number" class="form-control" placeholder="Enter phone" id="phone">
+                        <input type="tel" class="form-control" placeholder="Enter phone" id="phone" required pattern="[0-9]{10}">
                     </div>
+
                     <div class="form-group">
                         <label for="username">User Name:</label>
-                        <input type="text" class="form-control" placeholder="Enter usename" id="username">
+                        <input type="text" class="form-control" placeholder="Enter username" id="username" required pattern="[A-Za-z0-9]{5,}">
                     </div>
+
                     <div class="form-group">
                         <label for="pass">Password:</label>
-                        <input type="password" class="form-control" placeholder="Enter password" id="pass">
+                        <input type="password" class="form-control" placeholder="Enter password" id="pass" required minlength="8">
+                        <div class="invalid-feedback">Please enter a valid password (at least 8 characters).</div>
                     </div>
+
                     <div class="form-group">
                         <label for="email">Email:</label>
-                        <input type="email" class="form-control" placeholder="Enter email" id="email">
+                        <input type="email" class="form-control" placeholder="Enter email" id="email" required>
+                        <div class="invalid-feedback">Please enter a valid email address.</div>
                     </div>
+
                     <div class="form-group form-check">
                         <label class="form-check-label">
                             <input class="form-check-input" type="checkbox"> Remember me
                         </label>
                     </div>
+
                     <button type="button" class="btn btn-primary" onclick="handleSubmitCreateUser()">Submit</button>
                 </form>
             </div>
+
 
             <!-- Modal footer -->
             <div class="modal-footer">
@@ -512,6 +521,7 @@
 <!-- Page level custom scripts -->
 <!--<script src="js/demo/datatables-demo.js"></script>-->
 <script>
+    let jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmgxMjEyIiwiaWF0IjoxNzExMzUxMDY2LCJleHAiOjE3MTE0Mzc0NjZ9.wsK4QlUy-NlIp6fkHsj1RbTIrFOOCL03V-roFkIrB5Y";
     let modalCreEdit = {
         id: null,
         edit: false
@@ -521,6 +531,7 @@
             url: 'http://localhost:8080/api/user',
             method: 'GET',
             success: function(data) {
+                console.log(data);
                 let userHtml = data.map((user, index)=>{
                     return `
                             <tr>
@@ -531,7 +542,7 @@
                                             <td>${user.email}</td>
                                             <td>
                                             <a data-id="${user.id}" class="btn btn-primary btn-edit"><i class="far fa-edit"></i></a>
-                                            <a class="btn btn-danger" onclick="updateuser"><i class="fas fa-trash-alt"></i></a>
+                                            <a data-id="${user.id}" class="btn btn-danger btn-delete" ><i class="fas fa-trash-alt"></i></a>
                                             </td>
 
 
@@ -543,9 +554,6 @@
                 //
 
                 $(".btn-edit").on("click", function (evt){
-                    // console.log(evt)
-                    // console.log(this)
-                    // console.log($(this).data("id"))
                     let idUser = $(this).data("id");
                     modalCreEdit.edit = true;
                     modalCreEdit.id = idUser;
@@ -565,6 +573,29 @@
                     });
                     $("#myModal").modal();
                 });
+                $(".btn-delete").on("click", function (evt){
+                    let idUser = $(this).data("id");
+                    $.ajax({
+                        url: `http://localhost:8080/api/user/${idUser}`,
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': 'Bearer ' + jwtToken
+                        },
+                        success: function(response) {
+                            $(`#${idUser}`).remove();
+                            getAllUser();
+                            $.toast({
+                                text: "HÀNH ĐỘNG XÓA THÀNH CÔNG !!!",
+                                position: 'top-right',
+                                bgColor: '#17a673',
+                                textColor: 'white'
+                            })
+                        },
+                        error: function(err) {
+                            console.error('Error deleting category:', err);
+                        }
+                    });
+                })
             },
             error: function(err) {
                 console.error('Error retrieving user:', err);
@@ -594,11 +625,13 @@
             email: email
         }
 
-        // modalCreEdit.edit = true
         if(!modalCreEdit.edit){
             $.ajax({
                 url: 'http://localhost:8080/api/user',
                 method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + jwtToken // Attach the JWT token to the Authorization header
+                },
                 contentType: 'application/json',
                 data: JSON.stringify(userData),
                 success: function(response) {
@@ -612,7 +645,7 @@
                     $("#email").val("");
 
                     $.toast({
-                        text: "THÊM THÀNH CÔNG !!!",
+                        text: "HÀNH ĐỘNG THÊM THÀNH CÔNG !!!",
                         position: 'top-right',
                         bgColor: '#17a673',
                         textColor: 'white'
@@ -621,7 +654,7 @@
                 },
                 error: function(err) {
                     $.toast({
-                        text: "THÊM THẤT BẠI !!!",
+                        text: "HÀNH ĐỘNG THÊM THẤT BẠI !!!",
                         position: 'top-right',
                         bgColor: 'red',
                         textColor: 'white'
@@ -630,8 +663,11 @@
             });
         }else{
             $.ajax({
-                url: `http://localhost:8080/api/user/${modalCreEdit.id}`, // replace 1 with the ID of the category you want to update
+                url: `http://localhost:8080/api/user/${modalCreEdit.id}`,
                 method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + jwtToken
+                },
                 contentType: 'application/json',
                 data: JSON.stringify(userData),
                 success: function(response) {
@@ -657,6 +693,8 @@
         }
 
     }
+
+
 </script>
 </body>
 
