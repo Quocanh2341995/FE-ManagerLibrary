@@ -490,6 +490,7 @@
 <!-- Page level custom scripts -->
 <!--<script src="js/demo/datatables-demo.js"></script>-->
 <script>
+    let jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmgxMjEyIiwiaWF0IjoxNzExNDE2NDA0LCJleHAiOjE3MTE1MDI4MDR9.4UbVmsVqMRh6ekbJ_vmGMo_6S6t7EssHD1gvsvrZNuU";
     let modalCreEdit = {
         id: null,
         edit: false
@@ -498,6 +499,9 @@
         $.ajax({
             url: 'http://localhost:8080/api/categories',
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function(data) {
                 let categoryHtml = data.map((category, index)=>{
                     return `
@@ -528,6 +532,9 @@
                     $.ajax({
                         url: `http://localhost:8080/api/categories/${idCategory}`,
                         method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + jwtToken
+                        },
                         success: function(data) {
                             $("#name").val(data.name);
 
@@ -578,6 +585,9 @@
                 url: 'http://localhost:8080/api/categories',
                 method: 'POST',
                 contentType: 'application/json',
+                headers: {
+                    'Authorization': 'Bearer ' + jwtToken
+                },
                 data: JSON.stringify(categoryData),
                 success: function(response) {
                     getAllCategory();
@@ -607,6 +617,9 @@
                 url: `http://localhost:8080/api/categories/${modalCreEdit.id}`, // replace 1 with the ID of the category you want to update
                 method: 'PUT',
                 contentType: 'application/json',
+                headers: {
+                    'Authorization': 'Bearer ' + jwtToken
+                },
                 data: JSON.stringify(categoryData),
                 success: function(response) {
                     getAllCategory();
@@ -638,6 +651,9 @@
         $.ajax({
             url: `http://localhost:8080/api/categories/${categoryId}`,
             method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function (response) {
                 getAllCategory();
                 $.toast({

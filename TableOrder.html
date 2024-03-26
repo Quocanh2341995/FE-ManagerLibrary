@@ -505,10 +505,10 @@
                         <label for="quantity">Tên sách:</label>
                         <p id="nameBorrow"></p>
                     </div>
-<!--                    <div class="form-group">-->
-<!--                        <label for="quantity">Số Lượng:</label>-->
-<!--                        <p id="quantityBorrow"></p>-->
-<!--                    </div>-->
+                    <div class="form-group">
+                        <label for="quantity">Ngày Trả:</label>
+                        <p id="payDateBorrow"></p>
+                    </div>
 
                     <div id="order-detail-container">
 
@@ -591,6 +591,7 @@
 <!-- Page level custom scripts -->
 <!--<script src="js/demo/datatables-demo.js"></script>-->
 <script>
+    let jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmgxMjEyIiwiaWF0IjoxNzExNDE2NDA0LCJleHAiOjE3MTE1MDI4MDR9.4UbVmsVqMRh6ekbJ_vmGMo_6S6t7EssHD1gvsvrZNuU";
     let modalCreEdit = {
         id: null,
         edit: false
@@ -614,6 +615,9 @@
         $.ajax({
             url: `http://localhost:8080/api/orders/${orderId}`,
             method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function(data) {
                 // If deletion is successful, reload the table data
                 loadOrders();
@@ -631,6 +635,9 @@
         $.ajax({
             url: `http://localhost:8080/api/user/${idUser}`,
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function(data) {
                 nameUser.text(data.fullName);
             },
@@ -649,6 +656,9 @@
         $.ajax({
             url: 'http://localhost:8080/api/books/all',
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function(data) {
                 $('#book').empty();
                 data.forEach(function(book) {
@@ -667,6 +677,9 @@
         $.ajax({
             url: 'http://localhost:8080/api/orders',
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function(data) {
                 $('#tb-user').empty();
                 data.forEach(function(order) {
@@ -704,11 +717,15 @@
         $.ajax({
             url: `http://localhost:8080/api/orders/${orderId}`,
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function(data) {
 
                 console.log(data.orderDetailResDtos)
                 $("#userBorrow").html(data.userResDto.fullName)
                 $("#dateBorrow").html(data.borrowDate)
+                $("#payDateBorrow").html(data.payDate)
                 let orderDetailsHtml = "";
                 data.orderDetailResDtos.forEach(function(orderDetail) {
                     orderDetailsHtml += `
@@ -753,6 +770,9 @@
             url: 'http://localhost:8080/api/orders',
             method: 'POST',
             contentType: 'application/json',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             data: JSON.stringify(orderData),
             success: function(response) {
                 loadOrders();
@@ -786,6 +806,9 @@
         $.ajax({
             url: `http://localhost:8080/api/user/${userId}/orders`,
             method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function (userOrders) {
                 $('#userOrdersModal').modal('show');
                 let modalBody = $('#userOrdersModal .modal-body');
@@ -824,6 +847,9 @@
             url: `http://localhost:8080/api/orders/${orderId}/update-status`,
             method: 'PATCH',
             contentType: 'application/json',
+            headers: {
+                'Authorization': 'Bearer ' + jwtToken
+            },
             success: function(res) {
                 $.toast({
                     text: "Đã thay đổi trạng thái thành công!",
