@@ -789,6 +789,46 @@
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/main.js"></script>
 
+    <script>
+        function loadBooks(){
+            $.ajax({
+                url: 'http://localhost:8080/api/book/all',
+                method: 'GET',
+                success: function(data) {
+
+                    $('#featured_book').empty(); // Clear existing list
+                    let htmlContent = data.map((p)=>{
+                        return `
+                            <div class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
+                    <div class="featured__item">
+                        <div class="featured__item__pic set-bg" data-setbg="${p.image}" style="background-image: url('${p.image}')">
+                            <ul class="featured__item__pic__hover">
+                                <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                <li><a href="#"><i class="fa fa-retweet"></i></a></li>
+                                <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="featured__item__text">
+                            <h6><a href="#">${p.name}</a></h6>
+                            <h5>${p.description}</h5>
+                        </div>
+                    </div>
+                </div>
+                        `
+                    }).join("");
+                    $('#featured_book').html(htmlContent)
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching books:', error);
+                }
+            });
+        }
+
+        $( document ).ready(function() {
+            loadBooks();
+        });
+    </script>
+
 
 
 </body>
