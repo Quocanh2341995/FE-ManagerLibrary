@@ -761,7 +761,6 @@
         let userId = $("#idUser").val();
         let borrowDate = $("#borrowDate").val();
         let payDate = $("#payDate").val();
-        let status = "Test";
         let order = {
             bookId: book,
             quantity: quantity
@@ -772,8 +771,7 @@
             orderDetails: orderDetails,
             userId: userId,
             borrowDate: borrowDate,
-            payDate: payDate,
-            status: status
+            payDate: payDate
         };
 
         $.ajax({
@@ -868,6 +866,7 @@
                     textColor: 'white'
                 });
                 $('#modalUpdateStatus').modal('toggle');
+                loadOrders();
             },
             error: function(err) {
                 $.toast({
