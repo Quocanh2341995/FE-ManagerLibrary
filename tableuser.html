@@ -126,17 +126,27 @@
         </li>
 
         <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" href="charts.html">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Charts</span></a>
+        <li class="nav-item active">
+            <a class="nav-link" href="book.html">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Book</span></a>
         </li>
 
         <!-- Nav Item - Tables -->
         <li class="nav-item active">
-            <a class="nav-link" href="tables.html">
+            <a class="nav-link" href="tableuser.html">
                 <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
+                <span>User</span></a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="category.html">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Category</span></a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="order.html">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Order</span></a>
         </li>
 
         <!-- Divider -->
@@ -521,7 +531,7 @@
 <!-- Page level custom scripts -->
 <!--<script src="js/demo/datatables-demo.js"></script>-->
 <script>
-    let jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmgxMjEyIiwiaWF0IjoxNzExMzUxMDY2LCJleHAiOjE3MTE0Mzc0NjZ9.wsK4QlUy-NlIp6fkHsj1RbTIrFOOCL03V-roFkIrB5Y";
+    let jwtToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmgxMjEyIiwiaWF0IjoxNzExNDE2NDA0LCJleHAiOjE3MTE1MDI4MDR9.4UbVmsVqMRh6ekbJ_vmGMo_6S6t7EssHD1gvsvrZNuU";
     let modalCreEdit = {
         id: null,
         edit: false
@@ -568,7 +578,7 @@
                             $("#email").val(data.email);
                         },
                         error: function(err) {
-                            console.error('Error retrieving categories:', err);
+                            console.error('Error retrieving user:', err);
                         }
                     });
                     $("#myModal").modal();
@@ -650,7 +660,6 @@
                         bgColor: '#17a673',
                         textColor: 'white'
                     })
-                    // dong modal
                 },
                 error: function(err) {
                     $.toast({

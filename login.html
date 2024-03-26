@@ -119,7 +119,7 @@
                     console.error("Unknown role:", data.role);
                     // Xử lý khi có vai trò không được xác định
                 }
-                localStorage.setItem(user, JSON.stringify(data)); // Di chuyển dòng này vào trong hàm success
+                localStorage.setItem("user", JSON.stringify(data)); // Di chuyển dòng này vào trong hàm success
             },
             error: function(xhr, status, error) {
                 console.error("Error:", error);
