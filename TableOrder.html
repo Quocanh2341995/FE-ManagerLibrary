@@ -479,7 +479,80 @@
         </div>
     </div>
 </div>
+<div class="modal" id="myModalShowDetail">
+    <div class="modal-dialog">
+        <div class="modal-content">
 
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Order detail</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="book">Người mượn:</label>
+                        <!-- Thêm dropdown hoặc trường input tìm kiếm cho việc chọn sách -->
+                        <p id="userBorrow" ></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Ngày mượn:</label>
+                        <p id="dateBorrow"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Tên sách:</label>
+                        <p id="nameBorrow"></p>
+                    </div>
+<!--                    <div class="form-group">-->
+<!--                        <label for="quantity">Số Lượng:</label>-->
+<!--                        <p id="quantityBorrow"></p>-->
+<!--                    </div>-->
+
+                    <div id="order-detail-container">
+
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="handleSubmitCreateOrder()">Submit</button>
+
+                </form>
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal" id="modalUpdateStatus">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+<!--                <h4 class="modal-title">Order detail</h4>-->
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <h3>XÁC NHẬN BẠN CÓ MUỐN THAY ĐỔI TRẠNG THÁI</h3>
+                <input type="hidden" id="OrderIdUpdateStatus">
+                <button type="button" class="btn btn-primary" onclick="handleSubmitUpdateStatusOrder()">Submit</button>
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 <!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
      aria-hidden="true">
@@ -604,8 +677,9 @@
                                     <td>${order.estatus}</td>
                                     <td>${order.userResDto.fullName}</td>
                                     <td>
-                                        <button class="btn btn-primary btn-edit" onclick="updateOrder(${order.id})"><i class="far fa-edit"></i></button>
+                                        <button class="btn btn-primary btn-edit" onclick="updateStatusOrder(${order.id})"><i class="far fa-edit"></i></button>
                                         <button class="btn btn-danger btn-delete" onclick="deleteOrder(${order.id})"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="btn btn-success btn-circle" onclick="showOrderOfUser(${order.id})"><i class="fas fa-eye"></i></button>
                                     </td>
                                 </tr>`;
                     $('#tb-user').append(row);
@@ -626,6 +700,34 @@
         addOrder();
     });
 
+    function showOrderOfUser(orderId){
+        $.ajax({
+            url: `http://localhost:8080/api/orders/${orderId}`,
+            method: 'GET',
+            success: function(data) {
+
+                console.log(data.orderDetailResDtos)
+                $("#userBorrow").html(data.userResDto.fullName)
+                $("#dateBorrow").html(data.borrowDate)
+                let orderDetailsHtml = "";
+                data.orderDetailResDtos.forEach(function(orderDetail) {
+                    orderDetailsHtml += `
+                    <tr>
+                        <td>${orderDetail.bookName}</td>
+                        <td>${orderDetail.quantity}</td>
+
+                        <!-- Add more columns here as needed -->
+                    </tr>
+                `;
+                });
+                $("#nameBorrow").html(orderDetailsHtml);
+            },
+            error: function(err) {
+                console.error('Error loading orders:', err);
+            }
+        });
+        $('#myModalShowDetail').modal('show');
+    }
     function handleSubmitCreateOrder() {
         let book = $('#book').find(":selected").val();
         let quantity = $("#quantity").val();
@@ -704,6 +806,40 @@
             },
             error: function (err) {
                 console.error('Error loading user orders:', err);
+            }
+        });
+
+    }
+
+    // Function to update status order
+    function updateStatusOrder(orderId) {
+        // Show the modal for adding a new order
+        $('#modalUpdateStatus').modal('show');
+        $("#OrderIdUpdateStatus").val(orderId);
+    }
+
+    function handleSubmitUpdateStatusOrder() {
+        let orderId = $("#OrderIdUpdateStatus").val();
+        $.ajax({
+            url: `http://localhost:8080/api/orders/${orderId}/update-status`,
+            method: 'PATCH',
+            contentType: 'application/json',
+            success: function(res) {
+                $.toast({
+                    text: "Đã thay đổi trạng thái thành công!",
+                    position: 'top-right',
+                    bgColor: '#17a673',
+                    textColor: 'white'
+                });
+                $('#modalUpdateStatus').modal('toggle');
+            },
+            error: function(err) {
+                $.toast({
+                    text: "Thay đổi thất bại!",
+                    position: 'top-right',
+                    bgColor: 'red',
+                    textColor: 'white'
+                });
             }
         });
     }
